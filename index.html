@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARCH BALANCE GAME</title>
+    <!-- 이미지 저장을 위한 라이브러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* NieR:Automata UI Style */
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+KR:wght@300;400;700&display=swap');
+
+        :root {
+            --bg-color: #d1cdc1;
+            --text-color: #4e4b42;
+            --accent-color: #cdbda1;
+            --line-color: #4e4b42;
+            --disabled-color: #9c9a92;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(90deg, rgba(78,75,66,0.05) 1px, transparent 1px),
+                linear-gradient(rgba(78,75,66,0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        h1, h2 {
+            font-family: 'Share Tech Mono', 'Noto Sans KR', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Screen States */
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.5s ease-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Login Screen */
+        #login-screen { text-align: center; }
+        .input-group { margin: 30px 0; }
+        input[type="password"] {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--line-color);
+            color: var(--text-color);
+            font-size: 1.2rem;
+            padding: 10px;
+            text-align: center;
+            outline: none;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        button {
+            background: transparent;
+            border: 1px solid var(--line-color);
+            color: var(--text-color);
+            padding: 12px 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Share Tech Mono', 'Noto Sans KR', monospace;
+            position: relative;
+        }
+        button:hover {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        /* Game Screen */
+        .progress-bar {
+            border-bottom: 2px solid var(--line-color);
+            margin-bottom: 40px;
+            padding-bottom: 10px;
+            font-family: 'Share Tech Mono', monospace;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .choice-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .choice-btn {
+            width: 100%;
+            padding: 30px;
+            font-size: 1.2rem;
+            text-align: center;
+            border: 1px solid var(--line-color);
+            background: rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+            word-break: keep-all;
+        }
+        .choice-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 5px; height: 100%;
+            background-color: var(--text-color);
+            transform: scaleY(0);
+            transition: transform 0.2s;
+        }
+        .choice-btn:hover::before { transform: scaleY(1); }
+        
+        .vs-text {
+            text-align: center;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--disabled-color);
+        }
+
+        /* Result Screen */
+        #capture-area {
+            background-color: var(--bg-color);
+            padding: 40px;
+            border: 2px solid var(--line-color);
+            position: relative;
+        }
+        
+        /* Nier UI Decorative Corners */
+        #capture-area::before, #capture-area::after {
+            content: ''; position: absolute; width: 15px; height: 15px; border: 2px solid var(--line-color);
+        }
+        #capture-area::before { top: 5px; left: 5px; border-right: none; border-bottom: none; }
+        #capture-area::after { bottom: 5px; right: 5px; border-left: none; border-top: none; }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--line-color);
+            padding-bottom: 20px;
+        }
+        .result-header h1 { margin: 0; font-size: 2rem; }
+        .result-header p { margin: 5px 0 0 0; font-weight: bold; }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--disabled-color);
+            font-size: 0.95rem;
+        }
+        
+        .res-text { flex: 1; text-align: center; word-break: keep-all; padding: 0 10px; }
+        .res-vs { margin: 0 10px; font-family: 'Share Tech Mono', monospace; color: var(--disabled-color); font-size: 0.8rem; }
+        
+        .selected-option {
+            font-weight: 700;
+            color: var(--text-color);
+            background: rgba(78,75,66,0.1);
+            border-left: 3px solid var(--text-color);
+            padding: 5px 10px;
+        }
+        
+        .unselected-option {
+            color: var(--disabled-color);
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .btn-wrap { text-align: center; margin-top: 30px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen active">
+        <h1>SYSTEM LOGIN</h1>
+        <p>요원 인증이 필요합니다.</p>
+        <div class="input-group">
+            <input type="password" id="password-input" placeholder="PASSWORD" />
+        </div>
+        <button onclick="checkPassword()">ACCESS >></button>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+        <div class="progress-bar">
+            <span>ARCH BALANCE GAME</span>
+            <span id="q-counter">01 / 10</span>
+        </div>
+        <div class="choice-container">
+            <button class="choice-btn" id="btn-left" onclick="selectOption('left')">왼쪽 선택지</button>
+            <div class="vs-text">VS</div>
+            <button class="choice-btn" id="btn-right" onclick="selectOption('right')">오른쪽 선택지</button>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="result-screen" class="screen">
+        <div id="capture-area">
+            <div class="result-header">
+                <h1>ARCH BALANCE GAME</h1>
+                <p>아크에이전트 2026 시즌 밸런스게임 결과지</p>
+            </div>
+            <div id="result-list"></div>
+        </div>
+        <div class="btn-wrap">
+            <button onclick="saveImage()">[ DATA SAVE ]</button>
+            <button onclick="location.reload()">[ REBOOT ]</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- 1. 데이터 베이스 (보스의 기획안) ---
+    const allQuestions = [
+        { left: "오아시스랑 야외플하다가 해일, 윈터 만나기", right: "윈터랑 야외플하다가 해일, 오아시스 만나기" },
+        { left: "신드롬에게서 외모 평가 받기", right: "오버로드에게서 몸매관리받기" },
+        { left: "잠자는 카토 깨우기", right: "자고있는데 카토에게 깨워지기" },
+        { left: "산타랑 평생 핫초코 먹기", right: "블루랑 평생 컵라면 먹기" },
+        { left: "피카한테 전기 맞아서 사과받기", right: "오아시스 가이드 거절해서 상처받은 표정보기" },
+        { left: "퓨어한테 착정 당하기", right: "오아시스한테 착정당하기" },
+        { left: "카르마에게 1시간 동안 저주파전기치료받기", right: "밴스와 1시간 동안 면담하기" },
+        { left: "에덴 밥 먹기", right: "해일이 길안내하기" },
+        { left: "바이브랑 1주일동안 순대국밥만 먹기", right: "리암이랑 1주일동안 펠메니만 먹기" },
+        { left: "햄스터로 변한 헬리오스", right: "친칠라가 된 저스티스" },
+        { left: "카르마 방에서 자위하다 카르마한테 들키기", right: "오버로드가 PT 트레이너" },
+        { left: "저스티스한테 선글라스 뺏기", right: "밴스한테 안경 뺏기" },
+        { left: "내가 제일 잘나가 추는 저스티스", right: "캐치캐치 추는 헬리오스" },
+        { left: "신드롬이랑 주딱하다가 실수로 전 애인 이름 부르기", right: "산타랑 주딱하다가 실수로 전애인 이름 부르기" },
+        { left: "신드롬한테 하루종일 씨발 듣기", right: "에덴한테 하루종일 결합품 소리 듣기" },
+        { left: "밴스와 키스할 때마다 안경 김 서리기(안경 못 벗음)", right: "해일과 스킨십할 때마다 머리카락 입에 들어가기" },
+        { left: "리암에게 얼려지기", right: "라임에게 얼려지기" },
+        { left: "샤드에게 스킨십 전에 '어디부터 시작해도 되겠습니까?' 하고 허락받기", right: "밴스에게 끝나고 '고생하셨습니다' 인사하기" }
+    ];
+
+    let selectedQuestions = [];
+    let currentQuestionIndex = 0;
+    let userChoices = [];
+
+    // --- 2. 코어 로직 ---
+    function checkPassword() {
+        const pw = document.getElementById('password-input').value;
+        if(pw === "ARCH2026") { // ★ 여기서 비밀번호를 변경하실 수 있습니다.
+            startGame();
+        } else {
+            alert("접근 거부: 비밀번호가 일치하지 않습니다.");
+        }
+    }
+
+    function startGame() {
+        document.getElementById('login-screen').classList.remove('active');
+        document.getElementById('game-screen').classList.add('active');
+        
+        // 18개 중 10개 랜덤 추출 (피셔-예이츠 셔플)
+        let shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
+        selectedQuestions = shuffled.slice(0, 10);
+        
+        updateGameUI();
+    }
+
+    function updateGameUI() {
+        if(currentQuestionIndex >= 10) {
+            showResult();
+            return;
+        }
+        
+        const q = selectedQuestions[currentQuestionIndex];
+        document.getElementById('q-counter').innerText = `0${currentQuestionIndex + 1} / 10`.slice(-7);
+        document.getElementById('btn-left').innerText = q.left;
+        document.getElementById('btn-right').innerText = q.right;
+    }
+
+    function selectOption(side) {
+        userChoices.push({
+            question: selectedQuestions[currentQuestionIndex],
+            selectedSide: side
+        });
+        currentQuestionIndex++;
+        updateGameUI();
+    }
+
+    function showResult() {
+        document.getElementById('game-screen').classList.remove('active');
+        document.getElementById('result-screen').classList.add('active');
+        
+        const resultList = document.getElementById('result-list');
+        resultList.innerHTML = '';
+
+        userChoices.forEach((choice) => {
+            const isLeftSelected = choice.selectedSide === 'left';
+            
+            const div = document.createElement('div');
+            div.className = 'result-item';
+            
+            div.innerHTML = `
+                <div class="res-text ${isLeftSelected ? 'selected-option' : 'unselected-option'}">
+                    ${choice.question.left}
+                </div>
+                <div class="res-vs">VS</div>
+                <div class="res-text ${!isLeftSelected ? 'selected-option' : 'unselected-option'}">
+                    ${choice.question.right}
+                </div>
+            `;
+            resultList.appendChild(div);
+        });
+    }
+
+    function saveImage() {
+        const captureArea = document.getElementById('capture-area');
+        
+        // 버튼 텍스트 변경으로 저장 중임을 알림
+        const btnWrap = document.querySelector('.btn-wrap');
+        btnWrap.style.display = 'none';
+
+        html2canvas(captureArea, {
+            backgroundColor: '#d1cdc1', // 니어 베이지 톤 강제 지정
+            scale: 2 // 고화질 렌더링
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'ARCH_Balance_Result.png';
+            link.href = canvas.toDataURL();
+            link.click();
+            
+            btnWrap.style.display = 'block';
+        });
+    }
+</script>
+
+</body>
+</html>
