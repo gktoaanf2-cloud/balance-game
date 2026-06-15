@@ -7,9 +7,8 @@
     <!-- 이미지 저장을 위한 라이브러리 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
-    <!-- Pretendard Variable Font & Share Tech Mono -->
+    <!-- Pretendard Variable Font ONLY -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -25,7 +24,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            /* 프리텐다드 얇은 웨이트(300), 자간 -50(-0.05em) 적용 */
+            /* 영문/한글 모두 프리텐다드 얇은 웨이트(300), 자간 -50(-0.05em) 적용 */
             font-family: 'Pretendard Variable', Pretendard, sans-serif;
             font-weight: 300;
             letter-spacing: -0.05em; 
@@ -46,10 +45,9 @@
         }
 
         h1, h2 {
-            font-family: 'Share Tech Mono', monospace;
+            font-weight: 300;
             text-transform: uppercase;
-            letter-spacing: 4px; /* 영문은 자간을 넓혀서 SF 느낌 강조 */
-            font-weight: 400;
+            letter-spacing: 0.1em; /* 영문 대문자 타이틀의 세련된 자간 */
         }
 
         .container {
@@ -62,22 +60,47 @@
 
         /* Screen States */
         .screen { display: none; }
-        .screen.active { display: block; animation: cyberFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .screen.active { display: block; animation: cyberFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
 
         @keyframes cyberFadeIn {
             from { opacity: 0; transform: translateY(15px); filter: blur(5px); }
             to { opacity: 1; transform: translateY(0); filter: blur(0); }
         }
 
-        /* Login Screen */
+        /* Login Screen (박스 제거, 블랙 배경화) */
         #login-screen { 
             text-align: center; 
-            padding: 60px 40px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            background: transparent; /* 배경 투명화 */
+            border: none; /* 테두리 제거 */
+            box-shadow: none; /* 그림자 제거 */
         }
+
+        /* 마름모 애니메이션 UI */
+        .rhombus-spinner {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            margin: 0 auto 35px auto;
+            transform: rotate(45deg);
+            animation: spin-outer 6s linear infinite;
+        }
+        .rhombus-spinner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        .rhombus-spinner::after {
+            content: '';
+            position: absolute;
+            top: 6px; left: 6px; right: 6px; bottom: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: spin-inner 4s linear infinite reverse;
+        }
+
+        @keyframes spin-outer { 100% { transform: rotate(405deg); } }
+        @keyframes spin-inner { 100% { transform: rotate(360deg); } }
         
         .input-group { margin: 40px 0; }
         
@@ -90,8 +113,9 @@
             padding: 10px;
             text-align: center;
             outline: none;
-            font-family: 'Share Tech Mono', monospace;
-            letter-spacing: 8px;
+            font-family: 'Pretendard Variable', Pretendard, sans-serif;
+            font-weight: 200;
+            letter-spacing: 0.3em;
             width: 220px;
             transition: border-color 0.4s, box-shadow 0.4s;
         }
@@ -105,13 +129,14 @@
             border: 1px solid rgba(255,255,255,0.4);
             color: var(--text-color);
             padding: 14px 45px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 300;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            font-family: 'Share Tech Mono', monospace;
-            letter-spacing: 2px;
+            letter-spacing: 0.1em;
             position: relative;
             overflow: hidden;
+            font-family: 'Pretendard Variable', Pretendard, sans-serif;
         }
         button:hover {
             background: #ffffff;
@@ -124,12 +149,12 @@
             border-bottom: 1px solid var(--glass-border);
             margin-bottom: 50px;
             padding-bottom: 15px;
-            font-family: 'Share Tech Mono', monospace;
             display: flex;
             justify-content: space-between;
             font-size: 0.85rem;
-            letter-spacing: 2px;
+            letter-spacing: 0.1em;
             color: rgba(255,255,255,0.5);
+            font-weight: 300;
         }
 
         .choice-container {
@@ -162,7 +187,6 @@
             transform: scaleX(0.97);
         }
 
-        /* V1 스캐닝 라인 애니메이션 (세로선) */
         .choice-btn::before {
             content: '';
             position: absolute;
@@ -175,7 +199,6 @@
             z-index: 1;
         }
         
-        /* 스캐닝 백그라운드 애니메이션 (가로 퍼짐) */
         .choice-btn::after {
             content: '';
             position: absolute;
@@ -198,16 +221,16 @@
         
         .vs-text {
             text-align: center;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
+            font-weight: 200;
             color: rgba(255,255,255,0.2);
-            letter-spacing: 4px;
+            letter-spacing: 0.2em;
             margin: 10px 0;
         }
 
         /* Result Screen */
         #capture-area {
-            background-color: #030304; /* 캡처 퀄리티를 위한 솔리드 블랙 */
+            background-color: #030304; 
             padding: 50px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
@@ -225,12 +248,11 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding-bottom: 30px;
         }
-        .result-header h1 { margin: 0; font-size: 2rem; color: #ffffff; }
+        .result-header h1 { margin: 0; font-size: 1.8rem; color: #ffffff; font-weight: 300; letter-spacing: 0.05em; }
         .result-header p { 
-            margin: 12px 0 0 0; 
+            margin: 15px 0 0 0; 
             font-size: 0.9rem; 
             color: rgba(255,255,255,0.4); 
-            letter-spacing: 1px; 
         }
 
         .result-item {
@@ -253,13 +275,13 @@
         
         .res-vs { 
             margin: 0 20px; 
-            font-family: 'Share Tech Mono', monospace; 
             color: rgba(255, 255, 255, 0.15); 
             font-size: 0.7rem; 
+            font-weight: 200;
         }
         
         .selected-option {
-            font-weight: 400; /* 얇은 폰트 중에서도 살짝 굵게 */
+            font-weight: 400; 
             color: #ffffff;
             background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, transparent 100%);
             border-left: 2px solid #ffffff;
@@ -281,8 +303,11 @@
 <div class="container">
     <!-- Login Screen -->
     <div id="login-screen" class="screen active">
-        <h1>SYSTEM LOGIN</h1>
-        <p class="scale-text" style="font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-top:-10px; margin-bottom: 20px;">요원 인증이 필요합니다.</p>
+        <!-- 회전하는 마름모 애니메이션 -->
+        <div class="rhombus-spinner"></div>
+        
+        <h1 style="margin: 0; font-size: 1.8rem; letter-spacing: 0.1em;">ARCH 2026</h1>
+        <p class="scale-text" style="font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-top: 15px; margin-bottom: 30px;">요원 인증이 필요합니다.</p>
         <div class="input-group">
             <input type="password" id="password-input" placeholder="••••••••" />
         </div>
@@ -323,6 +348,7 @@
 </div>
 
 <script>
+    // 누락되었던 콤마(,)를 완벽하게 복구했습니다. 이제 에러가 나지 않습니다.
     const allQuestions = [
         { left: "오아시스랑 야외플하다가 해일, 윈터 만나기", right: "윈터랑 야외플하다가 해일, 오아시스 만나기" },
         { left: "신드롬에게서 외모 평가 받기", right: "오버로드에게서 몸매관리받기" },
@@ -341,10 +367,10 @@
         { left: "신드롬한테 하루종일 씨발 듣기", right: "에덴한테 하루종일 결합품 소리 듣기" },
         { left: "밴스와 키스할 때마다 안경 김 서리기(안경 못 벗음)", right: "해일과 스킨십할 때마다 머리카락 입에 들어가기" },
         { left: "리암에게 얼려지기", right: "라임에게 얼려지기" },
-        { left: "샤드에게 스킨십 전에 '어디부터 시작해도 되겠습니까?' 하고 허락받기", right: "밴스에게 끝나고 '고생하셨습니다' 인사하기" }
-        { left: "이카로스의 날개에 맞기", right: "솔라리스에게 밟히기" }
-        { left: "헬리오스 농담 10시간 듣기", right: "해일 길안내 10시간 하기" }
-        { left: "휴고에게 경멸", right: "애쉬에게서 경멸" }
+        { left: "샤드에게 스킨십 전에 '어디부터 시작해도 되겠습니까?' 하고 허락받기", right: "밴스에게 끝나고 '고생하셨습니다' 인사하기" },
+        { left: "이카로스의 날개에 맞기", right: "솔라리스에게 밟히기" },
+        { left: "헬리오스 농담 10시간 듣기", right: "해일 길안내 10시간 하기" },
+        { left: "휴고에게 경멸", right: "애쉬에게서 경멸" },
         { left: "노아의 다정", right: "페더의 다정" }
     ];
 
@@ -361,7 +387,7 @@
         }
     }
 
-    // 엔터키 로그인 지원 추가
+    // 엔터키 로그인 지원
     document.getElementById('password-input').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') checkPassword();
     });
@@ -413,7 +439,7 @@
                 <div class="res-text scale-text ${isLeftSelected ? 'selected-option' : 'unselected-option'}">
                     ${choice.question.left}
                 </div>
-                <div class="res-vs">VS</div>
+                <div class="res-vs scale-text">VS</div>
                 <div class="res-text scale-text ${!isLeftSelected ? 'selected-option' : 'unselected-option'}">
                     ${choice.question.right}
                 </div>
@@ -425,20 +451,19 @@
     function saveImage() {
         const captureArea = document.getElementById('capture-area');
         const btnWrap = document.querySelector('.btn-wrap');
-        btnWrap.style.display = 'none'; // 버튼 숨김
+        btnWrap.style.display = 'none'; 
 
-        // 웹폰트 로딩 시간을 위해 약간의 딜레이 후 캡처 (선택사항이나 안정성을 위함)
         setTimeout(() => {
             html2canvas(captureArea, {
                 backgroundColor: '#030304',
                 scale: 2,
-                useCORS: true // 외부 폰트 깨짐 방지
+                useCORS: true 
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'ARCH_AGENT_Result.png';
                 link.href = canvas.toDataURL();
                 link.click();
-                btnWrap.style.display = 'flex'; // 버튼 원상복구
+                btnWrap.style.display = 'flex'; 
             });
         }, 100);
     }
