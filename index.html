@@ -4,250 +4,325 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARCH AGENT BALANCE GAME</title>
+    <!-- 이미지 저장을 위한 라이브러리 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Pretendard Variable Font & Share Tech Mono -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
     <style>
-        /* Stylish SF Black & White Glassmorphism UI Style */
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+KR:wght@300;400;700&display=swap');
-
         :root {
-            --bg-color: #0a0a0c; /* 깊은 암전 블랙 */
-            --text-color: #ffffff; /* 순백 화이트 */
-            --accent-color: #ffffff;
-            --line-color: rgba(255, 255, 255, 0.25); /* 유리 테두리용 라인 */
-            --disabled-color: #555558; /* 선택되지 않은 항목 회색 처리 */
-            --glass-bg: rgba(255, 255, 255, 0.03); /* 홀로그램 유리 배경 */
-            --glass-border: rgba(255, 255, 255, 0.15);
+            --bg-color: #030304; /* 더 깊고 무거운 심연의 블랙 */
+            --text-color: #ffffff;
+            --line-color: rgba(255, 255, 255, 0.15);
+            --disabled-color: #4a4a4d;
+            --glass-bg: rgba(255, 255, 255, 0.015);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-glow: rgba(255, 255, 255, 0.2);
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Noto Sans KR', sans-serif;
+            /* 프리텐다드 얇은 웨이트(300), 자간 -50(-0.05em) 적용 */
+            font-family: 'Pretendard Variable', Pretendard, sans-serif;
+            font-weight: 300;
+            letter-spacing: -0.05em; 
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             overflow-x: hidden;
-            /* 그리드 레이어 완벽 삭제 */
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 자평 97% 적용 클래스 */
+        .scale-text {
+            display: inline-block;
+            transform: scaleX(0.97);
+            transform-origin: center;
         }
 
         h1, h2 {
-            font-family: 'Share Tech Mono', 'Noto Sans KR', monospace;
+            font-family: 'Share Tech Mono', monospace;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 4px; /* 영문은 자간을 넓혀서 SF 느낌 강조 */
+            font-weight: 400;
         }
 
         .container {
             width: 100%;
             max-width: 800px;
-            padding: 20px;
+            padding: 30px;
             box-sizing: border-box;
             position: relative;
         }
 
         /* Screen States */
         .screen { display: none; }
-        .screen.active { display: block; animation: cyberFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .screen.active { display: block; animation: cyberFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
 
         @keyframes cyberFadeIn {
-            from { opacity: 0; transform: scale(0.98); filter: blur(4px); }
-            to { opacity: 1; transform: scale(1); filter: blur(0); }
+            from { opacity: 0; transform: translateY(15px); filter: blur(5px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
         }
 
         /* Login Screen */
         #login-screen { 
             text-align: center; 
-            padding: 50px 30px;
+            padding: 60px 40px;
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
         }
-        .input-group { margin: 30px 0; }
+        
+        .input-group { margin: 40px 0; }
+        
         input[type="password"] {
             background: transparent;
             border: none;
-            border-bottom: 2px solid var(--text-color);
+            border-bottom: 1px solid rgba(255,255,255,0.3);
             color: var(--text-color);
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             padding: 10px;
             text-align: center;
             outline: none;
             font-family: 'Share Tech Mono', monospace;
-            letter-spacing: 5px;
-            width: 200px;
-            transition: all 0.3s;
+            letter-spacing: 8px;
+            width: 220px;
+            transition: border-color 0.4s, box-shadow 0.4s;
         }
         input[type="password"]:focus {
-            border-bottom-color: var(--text-color);
-            box-shadow: 0 10px 10px -10px rgba(255, 255, 255, 0.3);
+            border-bottom-color: #fff;
+            box-shadow: 0 15px 15px -15px rgba(255, 255, 255, 0.4);
         }
         
         button {
             background: transparent;
-            border: 1px solid var(--text-color);
+            border: 1px solid rgba(255,255,255,0.4);
             color: var(--text-color);
-            padding: 12px 35px;
-            font-size: 0.95rem;
+            padding: 14px 45px;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.25s ease;
-            font-family: 'Share Tech Mono', 'Noto Sans KR', monospace;
-            letter-spacing: 1px;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            font-family: 'Share Tech Mono', monospace;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
         }
         button:hover {
-            background: var(--text-color);
-            color: var(--bg-color);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            background: #ffffff;
+            color: #000000;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
 
         /* Game Screen */
         .progress-bar {
-            border-bottom: 1px solid var(--line-color);
-            margin-bottom: 40px;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 50px;
             padding-bottom: 15px;
             font-family: 'Share Tech Mono', monospace;
             display: flex;
             justify-content: space-between;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.5);
         }
 
         .choice-container {
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 20px;
         }
 
+        /* 세련된 버튼 & V1 애니메이션 부활 */
         .choice-btn {
             width: 100%;
-            padding: 35px 25px;
-            font-size: 1.15rem;
+            padding: 40px 30px;
+            font-size: 1.2rem;
+            font-weight: 300;
             text-align: center;
             border: 1px solid var(--glass-border);
             background: var(--glass-bg);
-            color: rgba(255, 255, 255, 0.85);
+            color: rgba(255, 255, 255, 0.7);
             position: relative;
             word-break: keep-all;
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
         }
+        
+        /* 텍스트 컨테이너 (자평 97% 유지 및 z-index 확보) */
+        .choice-btn .btn-text {
+            position: relative;
+            z-index: 2;
+            display: inline-block;
+            transform: scaleX(0.97);
+        }
+
+        /* V1 스캐닝 라인 애니메이션 (세로선) */
+        .choice-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 2px; height: 100%;
+            background-color: #ffffff;
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1;
+        }
+        
+        /* 스캐닝 백그라운드 애니메이션 (가로 퍼짐) */
+        .choice-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, transparent 100%);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1;
+        }
+
         .choice-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.6);
+            border-color: rgba(255, 255, 255, 0.4);
             color: #ffffff;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
+            box-shadow: 0 5px 25px rgba(255, 255, 255, 0.05);
         }
+        .choice-btn:hover::before { transform: scaleY(1); }
+        .choice-btn:hover::after { transform: scaleX(1); }
         
         .vs-text {
             text-align: center;
             font-family: 'Share Tech Mono', monospace;
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: var(--disabled-color);
-            letter-spacing: 2px;
+            font-size: 1.4rem;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 4px;
+            margin: 10px 0;
         }
 
-        /* Result Screen (Stylish Glassmorphism) */
+        /* Result Screen */
         #capture-area {
-            background-color: #050505; /* 이미지 저장용 딥 블랙 고정 */
-            padding: 45px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-color: #030304; /* 캡처 퀄리티를 위한 솔리드 블랙 */
+            padding: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
         
-        /* SF 테크놀로지 코너 데코레이션 라인 */
         #capture-area::before, #capture-area::after {
-            content: ''; position: absolute; width: 12px; height: 12px; border: 2px solid #ffffff;
+            content: ''; position: absolute; width: 10px; height: 10px; border: 1px solid #ffffff;
         }
-        #capture-area::before { top: 8px; left: 8px; border-right: none; border-bottom: none; }
-        #capture-area::after { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+        #capture-area::before { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+        #capture-area::after { bottom: 15px; right: 15px; border-left: none; border-top: none; }
 
         .result-header {
             text-align: center;
-            margin-bottom: 45px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-            padding-bottom: 25px;
+            margin-bottom: 50px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 30px;
         }
-        .result-header h1 { margin: 0; font-size: 2.1rem; font-weight: 400; color: #ffffff; }
-        .result-header p { margin: 8px 0 0 0; font-size: 1rem; font-weight: 300; color: rgba(255,255,255,0.6); letter-spacing: 1px; }
+        .result-header h1 { margin: 0; font-size: 2rem; color: #ffffff; }
+        .result-header p { 
+            margin: 12px 0 0 0; 
+            font-size: 0.9rem; 
+            color: rgba(255,255,255,0.4); 
+            letter-spacing: 1px; 
+        }
 
         .result-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 18px;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 20px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
             font-size: 0.95rem;
         }
         
-        .res-text { flex: 1; text-align: center; word-break: keep-all; padding: 8px 12px; transition: all 0.3s; }
-        .res-vs { margin: 0 15px; font-family: 'Share Tech Mono', monospace; color: rgba(255, 255, 255, 0.2); font-size: 0.75rem; }
-        
-        /* 선택된 항목: 화려한 화이트 네온 라인 및 발광 효과 */
-        .selected-option {
-            font-weight: 700;
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.07);
-            border-left: 3px solid #ffffff;
-            box-shadow: inset 5px 0 15px rgba(255, 255, 255, 0.1);
+        .res-text { 
+            flex: 1; 
+            text-align: center; 
+            word-break: keep-all; 
+            padding: 10px 15px; 
+            line-height: 1.4;
         }
         
-        /* 선택되지 않은 항목: 세련된 다크 그레이 및 취소선 */
+        .res-vs { 
+            margin: 0 20px; 
+            font-family: 'Share Tech Mono', monospace; 
+            color: rgba(255, 255, 255, 0.15); 
+            font-size: 0.7rem; 
+        }
+        
+        .selected-option {
+            font-weight: 400; /* 얇은 폰트 중에서도 살짝 굵게 */
+            color: #ffffff;
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+            border-left: 2px solid #ffffff;
+        }
+        
         .unselected-option {
             color: var(--disabled-color);
             text-decoration: line-through;
-            opacity: 0.4;
+            text-decoration-color: rgba(255,255,255,0.2);
+            opacity: 0.3;
         }
 
-        .btn-wrap { text-align: center; margin-top: 40px; display: flex; justify-content: center; gap: 15px; }
-        .btn-wrap button { background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.3); }
-        .btn-wrap button:hover { background: #ffffff; border-color: #ffffff; }
+        .btn-wrap { text-align: center; margin-top: 50px; display: flex; justify-content: center; gap: 20px; }
+        .btn-wrap button { font-size: 0.8rem; background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.2); }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- Login Screen -->
     <div id="login-screen" class="screen active">
         <h1>SYSTEM LOGIN</h1>
-        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.5); letter-spacing: 1px;">요원 인증이 필요합니다.</p>
+        <p class="scale-text" style="font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-top:-10px; margin-bottom: 20px;">요원 인증이 필요합니다.</p>
         <div class="input-group">
             <input type="password" id="password-input" placeholder="••••••••" />
         </div>
-        <button onclick="checkPassword()">ACCESS SYSTEM ></button>
+        <button onclick="checkPassword()">ACCESS SYSTEM</button>
     </div>
 
+    <!-- Game Screen -->
     <div id="game-screen" class="screen">
         <div class="progress-bar">
             <span>ARCH AGENT BALANCE GAME</span>
             <span id="q-counter">01 / 10</span>
         </div>
         <div class="choice-container">
-            <button class="choice-btn" id="btn-left" onclick="selectOption('left')">왼쪽 선택지</button>
+            <div class="choice-btn" id="btn-left-container" onclick="selectOption('left')">
+                <span class="btn-text" id="btn-left">왼쪽 선택지</span>
+            </div>
             <div class="vs-text">VS</div>
-            <button class="choice-btn" id="btn-right" onclick="selectOption('right')">오른쪽 선택지</button>
+            <div class="choice-btn" id="btn-right-container" onclick="selectOption('right')">
+                <span class="btn-text" id="btn-right">오른쪽 선택지</span>
+            </div>
         </div>
     </div>
 
+    <!-- Result Screen -->
     <div id="result-screen" class="screen">
         <div id="capture-area">
             <div class="result-header">
                 <h1>ARCH AGENT BALANCE GAME</h1>
-                <p>아크에이전트 2026 시즌 밸런스게임 결과지</p>
+                <p class="scale-text">아크에이전트 2026 시즌 밸런스게임 결과지</p>
             </div>
             <div id="result-list"></div>
         </div>
         <div class="btn-wrap">
-            <button onclick="saveImage()">[ SAVE DATA ]</button>
-            <button onclick="location.reload()">[ REBOOT SYSTEM ]</button>
+            <button onclick="saveImage()">SAVE DATA</button>
+            <button onclick="location.reload()">REBOOT SYSTEM</button>
         </div>
     </div>
 </div>
 
 <script>
-    // --- 데이터 베이스 ---
     const allQuestions = [
         { left: "오아시스랑 야외플하다가 해일, 윈터 만나기", right: "윈터랑 야외플하다가 해일, 오아시스 만나기" },
         { left: "신드롬에게서 외모 평가 받기", right: "오버로드에게서 몸매관리받기" },
@@ -278,9 +353,14 @@
         if(pw === "ARCH2026") { 
             startGame();
         } else {
-            alert("ACCESS DENIED: 비밀번호가 일치하지 않습니다.");
+            alert("ACCESS DENIED : 인가되지 않은 요원입니다.");
         }
     }
+
+    // 엔터키 로그인 지원 추가
+    document.getElementById('password-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') checkPassword();
+    });
 
     function startGame() {
         document.getElementById('login-screen').classList.remove('active');
@@ -326,11 +406,11 @@
             div.className = 'result-item';
             
             div.innerHTML = `
-                <div class="res-text ${isLeftSelected ? 'selected-option' : 'unselected-option'}">
+                <div class="res-text scale-text ${isLeftSelected ? 'selected-option' : 'unselected-option'}">
                     ${choice.question.left}
                 </div>
                 <div class="res-vs">VS</div>
-                <div class="res-text ${!isLeftSelected ? 'selected-option' : 'unselected-option'}">
+                <div class="res-text scale-text ${!isLeftSelected ? 'selected-option' : 'unselected-option'}">
                     ${choice.question.right}
                 </div>
             `;
@@ -341,18 +421,22 @@
     function saveImage() {
         const captureArea = document.getElementById('capture-area');
         const btnWrap = document.querySelector('.btn-wrap');
-        btnWrap.style.display = 'none';
+        btnWrap.style.display = 'none'; // 버튼 숨김
 
-        html2canvas(captureArea, {
-            backgroundColor: '#050505', /* 캡처 퀄리티 보정 */
-            scale: 2 
-        }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = 'ARCH_AGENT_Result.png';
-            link.href = canvas.toDataURL();
-            link.click();
-            btnWrap.style.display = 'flex';
-        });
+        // 웹폰트 로딩 시간을 위해 약간의 딜레이 후 캡처 (선택사항이나 안정성을 위함)
+        setTimeout(() => {
+            html2canvas(captureArea, {
+                backgroundColor: '#030304',
+                scale: 2,
+                useCORS: true // 외부 폰트 깨짐 방지
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'ARCH_AGENT_Result.png';
+                link.href = canvas.toDataURL();
+                link.click();
+                btnWrap.style.display = 'flex'; // 버튼 원상복구
+            });
+        }, 100);
     }
 </script>
 
