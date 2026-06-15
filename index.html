@@ -331,7 +331,7 @@
         { left: "피카한테 전기 맞아서 사과받기", right: "오아시스 가이드 거절해서 상처받은 표정보기" },
         { left: "퓨어한테 착정 당하기", right: "오아시스한테 착정당하기" },
         { left: "카르마에게 1시간 동안 저주파전기치료받기", right: "밴스와 1시간 동안 면담하기" },
-        { left: "에덴 밥 먹기", right: "해일이 길안내하기" },
+        { left: "에덴 밥 먹기", right: "페더 밥 먹기" },
         { left: "바이브랑 1주일동안 순대국밥만 먹기", right: "리암이랑 1주일동안 펠메니만 먹기" },
         { left: "햄스터로 변한 헬리오스", right: "친칠라가 된 저스티스" },
         { left: "카르마 방에서 자위하다 카르마한테 들키기", right: "오버로드가 PT 트레이너" },
@@ -342,6 +342,10 @@
         { left: "밴스와 키스할 때마다 안경 김 서리기(안경 못 벗음)", right: "해일과 스킨십할 때마다 머리카락 입에 들어가기" },
         { left: "리암에게 얼려지기", right: "라임에게 얼려지기" },
         { left: "샤드에게 스킨십 전에 '어디부터 시작해도 되겠습니까?' 하고 허락받기", right: "밴스에게 끝나고 '고생하셨습니다' 인사하기" }
+        { left: "이카로스의 날개에 맞기", right: "솔라리스에게 밟히기" }
+        { left: "헬리오스 농담 10시간 듣기", right: "해일 길안내 10시간 하기" }
+        { left: "휴고에게 경멸", right: "애쉬에게서 경멸" }
+        { left: "노아의 다정", right: "페더의 다정" }
     ];
 
     let selectedQuestions = [];
@@ -350,7 +354,7 @@
 
     function checkPassword() {
         const pw = document.getElementById('password-input').value;
-        if(pw === "ARCH2026") { 
+        if(pw === "ARCH251024") { 
             startGame();
         } else {
             alert("ACCESS DENIED : 인가되지 않은 요원입니다.");
